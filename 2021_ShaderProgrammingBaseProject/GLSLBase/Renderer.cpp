@@ -55,6 +55,11 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_m4Model = glm::rotate(glm::mat4(1.0f), glm::radians(0.f), glm::vec3(1.f, 0.f, 0.f));
 	
 	//Create test data
+	float tempVertices1[] = { 0.f, 0.f, 0.f, -1.f, 0.f, 0.f, -1.f, 1.f, 0.f };
+	glGenBuffers(1, &m_VBO1);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO1);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tempVertices1), tempVertices1, GL_STATIC_DRAW);
+
 	float tempVertices[] = { 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.f };
 	glGenBuffers(1, &m_VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
@@ -304,14 +309,27 @@ void Renderer::Test()
 {
 	glUseProgram(m_SolidRectShader);
 
-	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
-	glEnableVertexAttribArray(attribPosition);
-
-	//glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
+	GLint VBOLocation = glGetAttribLocation(m_SolidRectShader, "a_Position");
+	glEnableVertexAttribArray(VBOLocation);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(VBOLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	GLint VBOLocation1 = glGetAttribLocation(m_SolidRectShader, "a_Position1");
+	glEnableVertexAttribArray(VBOLocation1);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO1);
+	glVertexAttribPointer(VBOLocation1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	static float gscale = 0.f;
+
+	GLint ScaleUniform = glGetUniformLocation(m_SolidRectShader, "u_Scale");
+	glUniform1f(ScaleUniform, gscale);
 
 	glDrawArrays(GL_TRIANGLES, 0, 3); //start rendering, primitive
 
-	glDisableVertexAttribArray(attribPosition);
+	gscale += 0.0001f;
+	if (gscale > 1.f)
+		gscale = 0.f;
+
+	glDisableVertexAttribArray(VBOLocation);
+	glDisableVertexAttribArray(VBOLocation1);
 }
