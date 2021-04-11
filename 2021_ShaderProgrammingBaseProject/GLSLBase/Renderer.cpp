@@ -261,8 +261,8 @@ unsigned char * Renderer::loadBMPRaw(const char * imagepath, unsigned int& outWi
 
 void Renderer::CreateParticle(int count)
 {
-	float* particleVertices = new float[count * 3 * 3 * 2];
-	int floatCount = count * 3 * 3 * 2;
+	int floatCount = count * (3 + 3 + 1) * 3 * 2;
+	float* particleVertices = new float[floatCount];
 	int vertexCount = count * 3 * 2;
 
 	int index = 0;
@@ -273,10 +273,25 @@ void Renderer::CreateParticle(int count)
 		float randomValueX = 0.f;
 		float randomValueY = 0.f;
 		float randomValueZ = 0.f;
+		float randomValueVX = 0.f;
+		float randomValueVY = 0.f;
+		float randomValueVZ = 0.f;
+		float randomEmitTime = 0.f;
 
-		randomValueX = (rand() / (float)RAND_MAX - 0.5f) * 2.f;
-		randomValueY = (rand() / (float)RAND_MAX - 0.5f) * 2.f;
+		//randomValueX = (rand() / (float)RAND_MAX - 0.5f) * 2.f;
+		//randomValueY = (rand() / (float)RAND_MAX - 0.5f) * 2.f;
+		//randomValueZ = 0.f;
+
+		randomValueX = 0.f;
+		randomValueY = 1.f;
 		randomValueZ = 0.f;
+
+
+		randomValueVX = (rand() / (float)RAND_MAX - 0.5f) * 0.2f;
+		randomValueVY = (rand() / (float)RAND_MAX - 0.5f) * 0.2f;
+		randomValueVZ = 0.f;
+
+		randomEmitTime = ((float)rand() / (float)RAND_MAX) * 10.f;
 
 		//v0
 		particleVertices[index] = -particleSize / 2.f + randomValueX;
@@ -284,6 +299,14 @@ void Renderer::CreateParticle(int count)
 		particleVertices[index] = -particleSize / 2.f + randomValueY;
 		index++;
 		particleVertices[index] = 0.f;
+		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = randomValueVZ;
+		index++;
+		particleVertices[index] = randomEmitTime;
 		index++;
 
 		 //v1
@@ -293,6 +316,14 @@ void Renderer::CreateParticle(int count)
 		index++;
 		particleVertices[index] = 0.f;
 		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = randomValueVZ;
+		index++;
+		particleVertices[index] = randomEmitTime;
+		index++;
 
 		//v2
 		particleVertices[index] = particleSize / 2.f + randomValueX;
@@ -300,6 +331,14 @@ void Renderer::CreateParticle(int count)
 		particleVertices[index] = particleSize / 2.f + randomValueY;
 		index++;
 		particleVertices[index] = 0.f;
+		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = randomValueVZ;
+		index++;
+		particleVertices[index] = randomEmitTime;
 		index++;
 
 		//v3
@@ -309,6 +348,14 @@ void Renderer::CreateParticle(int count)
 		index++;
 		particleVertices[index] = 0.f;
 		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = randomValueVZ;
+		index++;
+		particleVertices[index] = randomEmitTime;
+		index++;
 
 		//v4
 		particleVertices[index] = particleSize / 2.f + randomValueX;
@@ -317,6 +364,14 @@ void Renderer::CreateParticle(int count)
 		index++;
 		particleVertices[index] = 0.f;
 		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = randomValueVZ;
+		index++;
+		particleVertices[index] = randomEmitTime;
+		index++;
 
 		//v5
 		particleVertices[index] = -particleSize / 2.f + randomValueX;
@@ -324,6 +379,14 @@ void Renderer::CreateParticle(int count)
 		particleVertices[index] = particleSize / 2.f + randomValueY;
 		index++;
 		particleVertices[index] = 0.f;
+		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = randomValueVZ;
+		index++;
+		particleVertices[index] = randomEmitTime;
 		index++;
 	}
 
@@ -415,6 +478,8 @@ void Renderer::Test()
 	glDisableVertexAttribArray(VBOLocation1);
 }
 
+float g_Time = 0.f;
+
 void Renderer::Particle()
 {
 	GLuint shader = m_SolidRectShader;
@@ -423,7 +488,21 @@ void Renderer::Particle()
 	GLint VBOLocation = glGetAttribLocation(m_SolidRectShader, "a_Position");
 	glEnableVertexAttribArray(VBOLocation);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOManyParticle);
-	glVertexAttribPointer(VBOLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(VBOLocation, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (GLvoid*)0);
+
+	GLint VBOVLocation = glGetAttribLocation(m_SolidRectShader, "a_Velocity");
+	glEnableVertexAttribArray(VBOVLocation);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOManyParticle);
+	glVertexAttribPointer(VBOVLocation, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (GLvoid*)(sizeof(float) * 3));
+
+	GLint UniformTime = glGetUniformLocation(shader, "u_Time");
+	glUniform1f(UniformTime, g_Time);
+
+	GLint VBOEmitLocation = glGetAttribLocation(m_SolidRectShader, "a_EmitTime");
+	glEnableVertexAttribArray(VBOEmitLocation);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOManyParticle);
+	glVertexAttribPointer(VBOEmitLocation, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (GLvoid*)(sizeof(float) * 6));
 
 	glDrawArrays(GL_TRIANGLES, 0, m_VBOManyParticleCount);
+	g_Time += 0.016f;
 }
