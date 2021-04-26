@@ -66,7 +66,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(tempVertices), tempVertices, GL_STATIC_DRAW);
 
 	//CreateParticle
-	CreateParticle(10000);
+	CreateParticle(100);
 }
 
 void Renderer::CreateVertexBufferObjects()
@@ -291,9 +291,7 @@ void Renderer::CreateParticle(int count)
 		randomValueY = 0.f;
 		randomValueZ = 0.f;
 		randomValueVX = (rand() / (float)RAND_MAX - 0.5f) * 2.f;
-		randomValueVX = 1.f;
 		randomValueVY = (rand() / (float)RAND_MAX - 0.5f) * 2.f;
-		randomValueVY = 0.f;
 		randomValueVZ = 0.f;
 		randomEmitTime = ((float)rand() / (float)RAND_MAX) * 10.f;
 		randomLifeTime = ((float)rand() / (float)RAND_MAX) * 2.f;
