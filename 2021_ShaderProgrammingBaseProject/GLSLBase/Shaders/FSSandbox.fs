@@ -72,7 +72,24 @@ vec4 Radar()
 	return returnColor;
 }
 
+vec4 Wave()
+{
+	vec4 returnColor = vec4(0);
+
+	for(int i = 0; i < 10; i++)
+	{
+		vec2 ori = u_Points[i].xy;
+		vec2 pos = v_Color.rg;
+		float d = length(ori - pos);
+		float preq = 8;
+		returnColor += 0.5*vec4(sin(d * 2 * PI * preq - u_Time*2));
+	}
+
+	//returnColor = normalize(returnColor);
+	return returnColor;
+}
+
 void main()
 {
-	FragColor = Radar();
+	FragColor = Wave();
 }
